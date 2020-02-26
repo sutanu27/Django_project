@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Home Template</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<link rel="stylesheet"  type="text/css" href="{% static 'css/main.css' %}" />
+	</head>
+<body>
+
+<div class="header">
+<h1>Tech Guruji</h1>
+<p>Welcome to tech guruji</p>
+</div>
+
+<div class="row" >
+<div class="navigation"><a style="text-decoration:none" href='https://www.google.com'>Home</div>
+<div class="navigation"><a style="text-decoration:none" href='#'>Dashborad</div>
+<div class="navigation"><a style="text-decoration:none" href='#'>Exams</div>
+<div class="navigation"><a style="text-decoration:none" href='#'>Results</div>
+</div>
+
+<div class="main">
+<div class="main-content">
+<h1>Come on! boy</h1>
+<p>Hurry up...Bloody exams are comming.</p>
+</div><!-- main-content closes-->
+<div class="login">
+<h1>Sign in</h1>
+<div class="form">
+<form>
+  <p><label for="username">User Name</label></p>
+  <p><input type="text" id="username" name="username"></p>
+  <p><label for="password">Password</label></p>
+  <p><input type="password" id="password" name="password"></p>
+  <input type="submit" value="Sign in">
+</form>
+</div><!-- from closes-->
+</div><!--login closes-->
+</div><!-- main closes-->
+
+</body>
+<div class="footer">
+<footer>
+  <p>All rights reserved by Sutanu Paul</p>
+</footer></div><!-- footer closes-->
+</html>
