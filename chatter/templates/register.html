@@ -1,0 +1,25 @@
+{% extends "base_app.html" %}
+{% block content %}
+<form action="register" method="post">
+    {% csrf_token %}
+    <p><label for="first_name">First Name</label></p>
+    <p><input type="text" id="first_name" name="first_name"></p>
+    <p><label for="last_name">Last Name</label></p>
+    <p><input type="text" id="last_name" name="last_name"></p>
+    <p><label for="username">User Name</label></p>
+    <p><input type="text" id="username" name="username"></p>
+    <p><label for="email">E-mail</label></p>
+    <p><input type="text" id="email" name="email"></p>
+    <p><label for="password">Password</label></p>
+    <p><input type="password" id="password1" name="password1"></p>
+    <p><label for="password">Confirm Password</label></p>
+    <p><input type="password" id="password2" name="password2"></p>
+    <input type="submit" value="Sign in">
+</form>
+
+<div>
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>   
+{% endblock %}

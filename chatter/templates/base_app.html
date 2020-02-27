@@ -12,10 +12,15 @@
         Chatter
     </div>
     <div class=nav>
-        <li>Home</li>     
-        <li>Register</li>
-        <li>Login</li>
-        <li>About</li>
+        <li><a href='/'>Home</a></li> 
+        {% if user.is_authenticated %}    
+        <li>{{ user.username }}</li>
+        <li><a href='/accounts/logout'>Logout</a></li>
+        {% else %}
+        <li><a href='/accounts/register'>Register</a></li>
+        <li><a href='/accounts/login'>Login</a></li>
+        {% endif%}
+        <li><a href='/about'>About</a></li>
     </div>
     <div class=main>
         {% block content %}
