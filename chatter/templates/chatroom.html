@@ -16,11 +16,17 @@
         'ws://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
-    chatSocket.onmessage = function(e) {
+        chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
         document.querySelector('#chat-log').value += (message + '\n');
     };
+
+    chatSocket.onopen = function(e) {
+        chatSocket.send(JSON.stringify({
+            'invoke_fn': 'load_old_msg'
+        }))
+        };
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
@@ -37,7 +43,8 @@
         var messageInputDom = document.querySelector('#chat-message-input');
         var message = messageInputDom.value;
         chatSocket.send(JSON.stringify({
-            'message': message
+            'invoke_fn': 'add_new_msg',
+            'msg_content': message
         }));
 
         messageInputDom.value = '';
