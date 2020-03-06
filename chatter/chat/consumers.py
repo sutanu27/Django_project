@@ -1,12 +1,44 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .models import message
+from .models import messages
 
 class ChatConsumer(AsyncWebsocketConsumer):
+
+    def add_new_msg(self, data):
+        msg=data['msg_content']
+        user=self.scope["user"]
+        msg_inst=messages.objects.create(auther=user,content=msg)
+        msg_inst.save()
+        print('add_new_msg'+msg_inst.auther.username+'*'*80)
+        # Send message to room group
+        self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'auther': msg_inst.auther.username,
+                'content': msg_inst.content,
+                'timestamp': msg_inst.timestamp
+            }
+        )
+
+    def josonify( self, msg_inst):
+        msg_json={
+            'auther': msg_inst.auther.username,
+            'content': msg_inst.content,
+            'timestamp': msg_inst.timestamp
+        }
+        return msg_json
+
+    def load_old_msg(self , data):
+        print('load_old_msg'+'*'*80)
+        msgs=messages.objects.all().order_by('-timestamp')
+        json_msg=[ self.josonify(msg_inst=msg) for msg in msgs ]
+        self.send(text_data=json_msg)
+
     invoke = {
-        'load_old_msg' : load_old_msg ,
-        'add_new_msg': add_new_msg 
+        'add_new_msg': add_new_msg ,
+        'load_old_msg' : load_old_msg 
         }
 
     async def connect(self):
@@ -31,37 +63,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        self.invoke[text_data_json['invoke_fn']](self , text_data_json)
-
-    async def add_new_msg(self, data):
-        msg=json.loads(data)['msg_content']
-        user=self.scope["user"]
-        msg_inst=message.objects.create(auther=user,content=msg)
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'auther': msg_inst.username,
-                'content': msg_inst.content,
-                'timestamp': msg_inst.timestamp
-            }
-        )
-
-
-    async def load_old_msg(self , data):
-        messages=message.objects.all().order_by('-timestamp')
-        json_msg=[ self.josonify(msg_inst=msg) for msg in messages ]
-        return self.send(text_data=json_msg)
-
-    def josonify(self, msg_inst):
-        msg_json={
-            'auther': msg_inst.username,
-            'content': msg_inst.content,
-            'timestamp': msg_inst.timestamp
-        }
-        return msg_json
-
+        self.invoke[text_data_json['invoke_fn']](self,data=text_data_json)
 
     # Receive message from room group
     async def chat_message(self, event):
