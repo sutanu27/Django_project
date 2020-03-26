@@ -1,0 +1,19 @@
+{% extends "base_app.html" %}
+{% block content %}
+{% if user.is_authenticated %}
+<p><a href='/chat'>chat</a></p>
+<p><a href='/accounts/contacts'>contacts</a></p>
+<form action="search_name" method="post">
+    {% csrf_token %}
+<p><input type="text" id="username_substring" name="username_substring"></p>
+<input type="submit" value="Search">
+</form>
+<h1>List</h1>
+{% for user in users %}
+<li><a  href= "/chat/{{ user.link }}/" ><b>{{ user.name }} </b> </a></li>
+{% endfor %}
+{% else %}
+Hey! I am chatter!
+Chat with me!!
+{% endif %}
+{% endblock %}

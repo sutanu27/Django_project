@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth, User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from accounts.models import Contacts
 
 # Create your views here.
 def register(request):
@@ -48,3 +50,29 @@ def login(request):
 def logout(request) :
     auth.logout(request)
     return redirect('/')
+
+@login_required(login_url='/accounts/login')
+def contacts(request) :
+    contacts=Contacts.objects.filter(host=request.user).order_by('first_name')
+    return render(request,'contacts.html',{'contacts':contacts})
+
+@login_required(login_url='/accounts/login')
+def add_contacts(request) :
+    return render(request,'add_contact.html')
+
+@login_required(login_url='/accounts/login')
+def add_contact(request) :
+    if request.method == 'POST':
+        first_name=request.POST['first_name']
+        last_name=request.POST['last_name']
+        username=request.POST['username']
+        if User.objects.filter(username=username).exists():
+            Contacts.objects.create(host=request.user, first_name=first_name, last_name=last_name, username=username)
+            return redirect('contacts')
+        else:
+            messages.info(request,"User Name doesn't exits.")   
+            return redirect('add_contacts')
+    else:
+        return redirect('contacts')
+
+

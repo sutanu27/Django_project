@@ -1,6 +1,9 @@
 {% extends "base_app.html" %}
 {% block content %}
 {% if user.is_authenticated %}
+<p><a href='/chat'>chat</a></p>
+<p><a href='/accounts/contacts'>contacts</a></p>
+<p><a href='/chat/search'>search</a></p>
 {% else %}
 Hey! I am chatter!
 Chat with me!!

@@ -1,9 +1,9 @@
 {% extends "base_app.html" %}
 {% block content %}
 {% if user.is_authenticated %}
-<p><a href='/accounts/contacts'>contacts</a></p>
-{% for chatroom in chatrooms %}
-<li><a  href= "/chat/{{ chatroom.link }}/" ><b>{{ chatroom.name }} </b>  {{ chatroom.timestamp }}</a></li>
+<p><a href='/chat'>chat</a></p>
+{% for contact in contacts %}
+<li><a  href='/chat/get_or_create_room_{{ contact.username }}'>{{ contact.first_name }} {{contact.last_name }}</a></li>
 {% endfor %}
 <p><a href='/accounts/add_contacts'>add+</a></p>
 {% else %}
