@@ -2,7 +2,7 @@
 {% block content %}
 {% if user.is_authenticated %}
 <p><a href='/chat'>chat</a></p>
-<form action="add_contact" method="post">
+<form action="add_contact" method="get">
     {% csrf_token %}
     <p><label for="first_name">First Name</label></p>
     <p><input type="text" id="first_name" name="first_name"></p>

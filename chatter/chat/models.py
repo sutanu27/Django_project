@@ -2,47 +2,38 @@ from django.db import models
 from accounts.models import Contacts
 from django.contrib.auth.models import auth, User
 from django.contrib import admin
-from datetime import datetime
+from django.utils import timezone
 import uuid 
 
 # Create your models here.
 
 
 class ChatRoom(models.Model):
-    user1=models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
-    user2=models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    roomie=models.ManyToManyField(User,related_name='roommate', symmetrical=True,)
+    group=models.BooleanField()	
+    group_name=models.TextField(null=True,blank=True)
 
     @property
     def lastping(self):
-        msg=messages.objects.filter(room=self).order_by('timestamp')
+        msg=messages.objects.filter(room=self).order_by('-timestamp')
         if msg.exists():
             return msg.first().timestamp
         else:
-            return datetime.now()
-
-    @property
-    def name(self):
-        return self.id
+            return timezone.now()
 
     def guest_name(self,user):
-        if user==self.user1:
-            host=self.user1
-            guest=self.user2
-        elif user==self.user2:
-            host=self.user2
-            guest=self.user1
+        if self.group:
+            return self.group_name
         else:
-            return ''
-        contact=Contacts.objects.filter(host=host,username=guest.username)
-        if contact.exists():
-            return contact.first().first_name+' '+contact.first().last_name
-        else:
-            return guest.username
+            guest=self.roomie.exclude(username=user.username).first()
+            contact=Contacts.objects.filter(host=user,username=guest.username)
+            if contact.exists():
+                return contact.first().first_name+' '+contact.first().last_name
+            else:
+                return guest.username
         
-
     def __str__(self):
-        return str(self.name)
+        return str(self.id)
 
  
 

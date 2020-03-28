@@ -2,10 +2,12 @@
 {% block content %}
 {% if user.is_authenticated %}
 <p><a href='/accounts/contacts'>contacts</a></p>
+<p><a href='/accounts/create_group'>create group</a></p>
+<p><a href='/chat/search'>search</a></p>
+<h3>Chats</h1>
 {% for chatroom in chatrooms %}
-<li><a  href= "/chat/{{ chatroom.link }}/" ><b>{{ chatroom.name }} </b>  {{ chatroom.timestamp }}</a></li>
+<li><a  href= "/chat/chatroom/{{ chatroom.link }}/" ><b>{{ chatroom.name }} </b>  {{ chatroom.timestamp }}</a></li>
 {% endfor %}
-<p><a href='/accounts/add_contacts'>add+</a></p>
 {% else %}
 Hey! I am chatter!
 Chat with me!!

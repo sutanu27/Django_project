@@ -2,8 +2,12 @@
 {% block content %}
 {% if user.is_authenticated %}
 <p><a href='/chat'>chat</a></p>
+<p><a href='/accounts/contacts'>contacts</a></p>
+<p><a href='/accounts/create_group'>create group</a></p>
+<p><a href='/chat/search'>search</a></p>
+<h3>Contacts</h3>
 {% for contact in contacts %}
-<li><a  href='/chat/get_or_create_room_{{ contact.username }}'>{{ contact.first_name }} {{contact.last_name }}</a></li>
+<li><a  href='/chat/get_or_create_room/{{ contact.username }}'>{{ contact.first_name }} {{contact.last_name }}</a></li>
 {% endfor %}
 <p><a href='/accounts/add_contacts'>add+</a></p>
 {% else %}

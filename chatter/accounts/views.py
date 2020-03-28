@@ -3,6 +3,7 @@ from django.contrib.auth.models import auth, User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from accounts.models import Contacts
+from chat.models import ChatRoom
 
 # Create your views here.
 def register(request):
@@ -53,7 +54,7 @@ def logout(request) :
 
 @login_required(login_url='/accounts/login')
 def contacts(request) :
-    contacts=Contacts.objects.filter(host=request.user).order_by('first_name')
+    contacts=Contacts.objects.filter(host=request.user).order_by('first_name','last_name')
     return render(request,'contacts.html',{'contacts':contacts})
 
 @login_required(login_url='/accounts/login')
@@ -62,10 +63,10 @@ def add_contacts(request) :
 
 @login_required(login_url='/accounts/login')
 def add_contact(request) :
-    if request.method == 'POST':
-        first_name=request.POST['first_name']
-        last_name=request.POST['last_name']
-        username=request.POST['username']
+    if request.method == 'GET':
+        first_name=request.GET['first_name']
+        last_name=request.GET['last_name']
+        username=request.GET['username']
         if User.objects.filter(username=username).exists():
             Contacts.objects.create(host=request.user, first_name=first_name, last_name=last_name, username=username)
             return redirect('contacts')
@@ -75,4 +76,23 @@ def add_contact(request) :
     else:
         return redirect('contacts')
 
+@login_required(login_url='/accounts/login')
+def create_group(request):
+    contacts=Contacts.objects.filter(host=request.user).order_by('first_name','last_name')
+    return render(request,'create_group.html',{'contacts':contacts})
 
+@login_required(login_url='/accounts/login')
+def add_group(request):
+    if request.method == 'POST':
+        group_name=request.POST['group_name']
+        contacts=request.POST.getlist('contact[]')
+        print(str(contacts))
+        Chatroom=ChatRoom.objects.create(group=True,group_name=group_name)
+        Chatroom.roomie.add(request.user)
+        for contact in contacts:
+            user=User.objects.get(username=contact)
+            Chatroom.roomie.add(user)
+        Chatroom.save()
+        return render(request,'home.html')
+    else:
+        return redirect('contacts')
