@@ -14,3 +14,13 @@ class Contacts(models.Model):
 
 admin.site.register(Contacts)
 
+class Profile(models.Model):
+    host=models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile',primary_key = True)
+    profile_image=models.ImageField(upload_to='accounts/images/', blank=True)
+    status=models.TextField(blank=True)
+    
+    def __str__(self):
+        return self.host.username
+
+admin.site.register(Profile)
+

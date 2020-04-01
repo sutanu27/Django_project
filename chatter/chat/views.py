@@ -19,7 +19,6 @@ def chat(request):
             'name':guest_name,
             'timestamp':Chatroom.lastping
         })
-        print(guest_name)
     Chatrooms=sorted(chatrooms, key=lambda x: x['timestamp'], reverse = True)
     return render(request,'chat.html',{'chatrooms': Chatrooms})
 
@@ -27,7 +26,7 @@ def chat(request):
 def chatroom(request, room_id):
     room=ChatRoom.objects.filter(id=room_id,roomie=request.user)
     if room.exists():
-        return render(request,'chatroom.html',{'room_name':room_id})
+        return render(request,'chatroom.html',{'room_id':room_id, 'room_type':room.first().group, 'room_name':room.first().guest_name(request.user) })
     else:
         raise PermissionDenied("You do not have permission")
 

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth, User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from accounts.models import Contacts
+from accounts.models import Contacts, Profile
 from chat.models import ChatRoom
 
 # Create your views here.
@@ -25,7 +25,9 @@ def register(request):
             messages.info(request,"This E-mail id is already in use. Please try something else.")
             return redirect('register')
         else :
-            User.objects.create_user(username=username, password=password1, first_name=first_name, last_name=last_name, email=email)
+            auth.logout(request)
+            user=User.objects.create_user(username=username, password=password1, first_name=first_name, last_name=last_name, email=email)
+            Profile.objects.create(host=user)
             return redirect('/')
     else :
         return render(request,'register.html')
@@ -67,7 +69,7 @@ def add_contact(request) :
         first_name=request.GET['first_name']
         last_name=request.GET['last_name']
         username=request.GET['username']
-        if User.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exclude(username=request.user.username).exists():
             Contacts.objects.create(host=request.user, first_name=first_name, last_name=last_name, username=username)
             return redirect('contacts')
         else:
@@ -81,18 +83,49 @@ def create_group(request):
     contacts=Contacts.objects.filter(host=request.user).order_by('first_name','last_name')
     return render(request,'create_group.html',{'contacts':contacts})
 
+def add_users_chatroom(Chatroom,contacts):
+    for contact in contacts:
+        user=User.objects.get(username=contact)
+        Chatroom.roomie.add(user)
+    Chatroom.save()
+
+
 @login_required(login_url='/accounts/login')
 def add_group(request):
     if request.method == 'POST':
         group_name=request.POST['group_name']
         contacts=request.POST.getlist('contact[]')
-        print(str(contacts))
         Chatroom=ChatRoom.objects.create(group=True,group_name=group_name)
         Chatroom.roomie.add(request.user)
-        for contact in contacts:
-            user=User.objects.get(username=contact)
-            Chatroom.roomie.add(user)
-        Chatroom.save()
+        add_users_chatroom(Chatroom=Chatroom,contacts=contacts)
         return render(request,'home.html')
     else:
         return redirect('contacts')
+
+
+
+@login_required(login_url='/accounts/login')
+def add_group_user(request,room_id):
+    Chatroom=ChatRoom.objects.filter(id=room_id).first()
+    existng_roommates=[ x.username for x in Chatroom.roomie.all()]
+    contacts=Contacts.objects.filter(host=request.user).exclude(username__in=existng_roommates).order_by('first_name','last_name')
+    return render(request,'add_group_user.html',{'contacts':contacts, 'room_id':room_id, 'room_name':Chatroom.group_name})
+
+
+@login_required(login_url='/accounts/login')
+def add_users_to_group(request):
+    if request.method == 'POST':
+        room_id=request.POST['room_id']
+        contacts=request.POST.getlist('contact[]')
+        Chatroom=ChatRoom.objects.filter(id=room_id)
+        if Chatroom.exists():
+            add_users_chatroom(Chatroom=Chatroom.first(),contacts=contacts)
+            return redirect('chatroom',room_id=Chatroom.first().id)
+        else:
+            print('room does not exists')
+    else:
+        return redirect('contacts')
+
+@login_required(login_url='/accounts/login')
+def profile(request):
+    render (request,'profile')

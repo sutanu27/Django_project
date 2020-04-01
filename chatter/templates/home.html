@@ -5,6 +5,11 @@
 <p><a href='/accounts/contacts'>contacts</a></p>
 <p><a href='/accounts/create_group'>create group</a></p>
 <p><a href='/chat/search'>search</a></p>
+<div id=body>
+    <img src='{{ user.profile.profile_image.url }}'>
+    <p><h2>{{ user.first_name }} {{ user.last_name }}</h2></p>
+    <p><h2>{{ user.profile.status }}</h2></p>
+</div>
 {% else %}
 Hey! I am chatter!
 Chat with me!!

@@ -12,6 +12,7 @@ class ChatRoom(models.Model):
     roomie=models.ManyToManyField(User,related_name='roommate', symmetrical=True,)
     group=models.BooleanField()	
     group_name=models.TextField(null=True,blank=True)
+    create_datetime=models.DateTimeField(auto_now_add=True)
 
     @property
     def lastping(self):
@@ -19,7 +20,7 @@ class ChatRoom(models.Model):
         if msg.exists():
             return msg.first().timestamp
         else:
-            return timezone.now()
+            return self.create_datetime
 
     def guest_name(self,user):
         if self.group:

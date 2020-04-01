@@ -5,13 +5,17 @@
     <title>Chat Room</title>
 </head>
 <body>
+    <h3>Chat Box[ {{ room_name }} ]</h3>
     <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+    {% if room_type  %}
+    <p><a href='/accounts/add_group_user_{{ room_id }}'>Add user +</a></p>
+    {% endif %}
 </body>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js'></script>
 <script>
-    var roomName = "{{ room_name|cut:'-'|escapejs }}";
+    var roomName = "{{ room_id|cut:'-'|escapejs }}";
 
     var chatSocket = new ReconnectingWebSocket(
         'ws://' + window.location.host +
@@ -31,6 +35,7 @@
     };
 
     function get_old_messages(messages){
+        document.querySelector('#chat-message-input').value = ''
         for (var j=0;j<messages.length;j++ ){
                 var full_msg=messages[j]['auther']+":"+messages[j]['content']
                 document.querySelector('#chat-log').value += (full_msg + '\n');
@@ -44,7 +49,6 @@
     }
 
     chatSocket.onopen = function(e) {
-        document.querySelector('#chat-message-input').value = ''
         chatSocket.send(JSON.stringify({
             'invoke_fn': 'load_old_msg'
         }))
