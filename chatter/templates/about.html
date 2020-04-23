@@ -1,6 +1,43 @@
 {% extends "base_app.html" %}
 {% block content %}
-Hey There!
-This is Sutanu.
-The developer of this stupid app.
+<div class="container-fluid "> 
+    <div class="row">
+        <div class='col-sm-9 main'>
+            <div class="basic">
+                Hey There!
+                This is Sutanu.
+                The developer of this stupid app.
+            </div>
+        </div> 
+        <div class='col-sm-3 pannels'><h1></h1>
+            {% if user.is_authenticated %}
+            <div class="row" >
+                <a class="col-lg-4 btn pannel_design border" href='/chat'>CHAT</a>
+                <a class="col-lg-4 btn pannel_design border" href='/accounts/contacts'>CONTACTS</a>
+                <a class="col-lg-4 btn pannel_design border" href='/chat/search'>SEARCH</a>
+            </div>
+            {% else %}
+            <div class="basic_pannel">
+                <h3> Log In </h3>
+                <form action="/accounts/login" method="post">
+                    {% csrf_token %}
+                    <p><label for="username">USERNAME</label></p>
+                    <p><input class="form-control" type="text" id="username" name="username"></p>
+                    <p><label for="password">PASSWORD</label></p>
+                    <p><input class="form-control" type="password" id="password" name="password"></p>
+                    <input type="submit" class="btn btn-primary" value="Sign in">
+                    <a href='/accounts/register' class="btn btn-primary">Sign up</a>
+                </form>
+                <div>
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                </div>   
+            </div>
+            {% endif %}
+        </div> 
+    </div>
+</div>
 {% endblock %}
+
+

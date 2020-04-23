@@ -1,17 +1,89 @@
 {% extends "base_app.html" %}
 {% block content %}
-{% if user.is_authenticated %}
-<p><a href='/chat'>chat</a></p>
-<p><a href='/accounts/contacts'>contacts</a></p>
-<p><a href='/accounts/create_group'>create group</a></p>
-<p><a href='/chat/search'>search</a></p>
-<div id=body>
-    <img src='{{ user.profile.profile_image.url }}'>
-    <p><h2>{{ user.first_name }} {{ user.last_name }}</h2></p>
-    <p><h2>{{ user.profile.status }}</h2></p>
+<div class="container-fluid "> 
+    <div class="row">
+        <div class='col-md-9 main' id="main">
+            {% if user.is_authenticated %}
+            <div class=' row'>
+                <div class="col-12 ">
+                    <div class='chat_header '>
+                        <img :src="currentChatRoomImage" v-show="currentChatRoomImage != ''" class="rounded-circle border" width="44" height="44" style="margin: 3px; ">
+                        <label class="chat_head_name" ><b>[{ currentChatRoomName }]</b></label>
+                        <label v-show="is_group" style="float:right; padding:  10px 15px 0px 0px; "><i class="fa fa-plus"  aria-hidden="true"></i></label>
+                    </div>                 
+                </div>
+                <div class="col-12 " >
+                    <div class='chat_window'  v-cloak>
+                        <div  v-for="chatmessage in chatmessages"   >
+                            <message-component :chatmessage="chatmessage"  :is_group='is_group' ></message-component>    
+                        </div>
+                    </div>                 
+                </div>
+                <div class="col-12  ">
+                    <div class="write_pad">
+                            <textarea id="chat-message-input" class="input_box" type="text" v-model="message_content" @keyup.enter="manageMessage"></textarea>
+                    </div>
+                </div>
+                <div class="col-12  ">
+                    <div class="write_pad">
+                            <label id="chat-message-submit" type="button" class=" btn-info btn-lg"  onclick="sendApply(this)" @click="sendMessage">
+                                <i class="fa fa-paper-plane"></i> 
+                            </label>
+                            <label for="file-input" class=" btn-info btn-lg">
+                                <i class="fa fa-paperclip  " aria-hidden="true"></i>
+                                <input type="file" class="custom-file-input" onchange="readURL(this)" @change="addFiles" style="display: none;" multiple name="file-input" id="file-input">
+                            </label> 
+                            <div class='files'></div>                   
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="basic">
+                <h2>Hey! I am chatter!</h2>
+                <h2>Chat with me!!</h2>
+            </div>
+            {% endif %}
+        </div> 
+        <div class='col-md-3 pannels' >
+            {% if user.is_authenticated %}
+            <div class="row" >
+                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border " :class="active" v-on:click="renderChat" id='chat_pannel'>CHAT</a>
+                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border"  :class="active" v-on:click="renderContact" id='contact_pannel' >CONTACTS</a>
+                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border"  :class="active" v-on:click="renderSearch" id='search_pannel'>SEARCH</a>
+            </div>
+            <div id='pannels' >
+                <div v-if="is_search">
+                    <searchbar-component  v-model='user_sub_str' ></searchbar-component>
+                </div>
+                <div v-for='chatroom in chatrooms'>
+                    <chatbox-component :on_chatroom='chatroom'></chatbox-component>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="basic_pannel">
+                <h3> Log In </h3>
+                <form action="/accounts/login" method="post">
+                    {% csrf_token %}
+                    <p><label for="username">USERNAME</label></p>
+                    <p><input class="form-control" type="text" id="username" name="username"></p>
+                    <p><label for="password">PASSWORD</label></p>
+                    <p><input class="form-control" type="password" id="password" name="password"></p>
+                    <input type="submit" class="btn btn-primary" value="Sign in">
+                    <a href='/accounts/register' class="btn btn-primary">Sign up</a>
+                </form>
+                <div>
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                </div>   
+            </div>
+            {% endif %}
+        </div> 
+    </div>
 </div>
-{% else %}
-Hey! I am chatter!
-Chat with me!!
-{% endif %}
+
 {% endblock %}
+
+
+

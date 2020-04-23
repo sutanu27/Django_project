@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from accounts.models import Contacts, Profile
 from chat.models import ChatRoom
+from django.http import HttpResponse, JsonResponse
+from .serializers import *
 
 # Create your views here.
 def register(request):
@@ -38,7 +40,7 @@ def login(request):
         password=request.POST['password']
         if not User.objects.filter(username=username).exists():
             messages.info(request,"User Name doesn't exists.")
-            return redirect('login')
+            return redirect('/')
         else:
             user=auth.authenticate(username=username,password=password)
             if user is not None:
@@ -46,24 +48,34 @@ def login(request):
                 return redirect('/')
             else:
                 messages.error(request,'Username or password invallid')
-                return redirect('login')
+                return redirect('/')
     else:
-        return render(request,'login.html')
+        return render(request,'home.html')
 
 def logout(request) :
     auth.logout(request)
     return redirect('/')
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def contacts(request) :
-    contacts=Contacts.objects.filter(host=request.user).order_by('first_name','last_name')
+    cntcs=Contacts.objects.filter(host=request.user).order_by('first_name','last_name')
+    contacts=[]
+    for cntc in cntcs:
+        img_link=User.objects.filter(username=cntc.username).first().profile.profile_image.url
+        contacts.append(
+            {
+                'full_name':cntc.first_name+' '+cntc.last_name,
+                'username': cntc.username,
+                'img_link':img_link
+            }
+        )
     return render(request,'contacts.html',{'contacts':contacts})
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def add_contacts(request) :
     return render(request,'add_contact.html')
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def add_contact(request) :
     if request.method == 'GET':
         first_name=request.GET['first_name']
@@ -78,7 +90,7 @@ def add_contact(request) :
     else:
         return redirect('contacts')
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def create_group(request):
     contacts=Contacts.objects.filter(host=request.user).order_by('first_name','last_name')
     return render(request,'create_group.html',{'contacts':contacts})
@@ -90,7 +102,7 @@ def add_users_chatroom(Chatroom,contacts):
     Chatroom.save()
 
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def add_group(request):
     if request.method == 'POST':
         group_name=request.POST['group_name']
@@ -104,7 +116,7 @@ def add_group(request):
 
 
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def add_group_user(request,room_id):
     Chatroom=ChatRoom.objects.filter(id=room_id).first()
     existng_roommates=[ x.username for x in Chatroom.roomie.all()]
@@ -112,7 +124,7 @@ def add_group_user(request,room_id):
     return render(request,'add_group_user.html',{'contacts':contacts, 'room_id':room_id, 'room_name':Chatroom.group_name})
 
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def add_users_to_group(request):
     if request.method == 'POST':
         room_id=request.POST['room_id']
@@ -126,6 +138,25 @@ def add_users_to_group(request):
     else:
         return redirect('contacts')
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/')
 def profile(request):
     render (request,'profile')
+
+
+    
+@login_required(login_url='/')
+def ContactsApi(request) :
+    usr=request.user
+    cntcs=Contacts.objects.filter(host=usr).order_by('first_name','last_name')
+    contacts=[]
+    for cntc in cntcs:
+        img_link=User.objects.filter(username=cntc.username).first().profile.profile_image.url
+        contacts.append(
+            {
+                'full_name':cntc.first_name+' '+cntc.last_name,
+                'username': cntc.username,
+                'img_link': img_link
+            }
+        )
+    serializer=ContactsSerializer(contacts,many=True)
+    return JsonResponse(serializer.data, safe=False)

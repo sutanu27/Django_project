@@ -1,0 +1,366 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+[v-cloak] { display:none; }
+
+
+.header{
+    height: 100 vh;
+    width: 100%;
+    color: rgb(80, 255, 197);
+    background-color: rgb(40, 184, 176);
+    text-align: left ;
+    padding-left : 10px;
+}
+
+
+.navbar-header-style{
+    width: inherit;
+}
+
+.logo{
+    height: 75px;
+    padding: 5px 10px;
+}
+
+.nav-head{
+ padding-left: 50px;
+}
+
+.nav_name{
+    color: white;
+    background-color: rgb(40, 184, 176);
+    font-size: large;
+    text-align: center ;
+    align-content: center;
+    border-right: black 1px solid;
+    padding: 15px;
+    text-decoration:none;
+}
+
+.nav_tab{
+    color: white;
+    background-color: rgb(40, 184, 176);
+    font-size: large;
+    text-align: center ;
+    align-content: center;
+    border-right: black 1px solid;
+    padding: 15px;
+    text-decoration:none;
+}
+
+.nav_tab:hover{
+    color: white;
+    background-color: rgb(179, 245, 242);
+    text-decoration:none;
+}
+
+
+.footer{
+    padding: 5px;
+    background-color: rgb(138, 223, 156);
+    text-align: center;
+}
+
+.main{
+    height: 100%;
+    color: rgb(163, 228, 206);
+    background-image: url("../img/climpek.png");
+    background-color: rgb(164, 202, 187);
+    min-width: 300px;
+}
+
+.chat_header{
+    background-color: rgb(225, 245, 243);
+    color: rgb(110, 110, 218);
+    margin: 10px 0px 0px 0px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    height: 50px;
+    border-bottom: solid 1px rgb(147, 160, 159);;
+}
+
+.chat_head_name{
+    padding-left: 5px;
+}
+
+.chat_window{
+    height: 60vh;
+    background-color: rgb(225, 245, 243);
+    background-image: url("../img/food.png");
+    margin: 0px 0px 10px 0px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.container-fluid{
+    overflow: hidden;
+}
+
+
+  .chat_window::-webkit-scrollbar {
+    width: .4em; 
+  }
+
+  .chat_window::-webkit-scrollbar,
+  .chat_window::-webkit-scrollbar-thumb {
+    overflow:visible;
+    border-radius: 4px;
+  }
+
+  .chat_window::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,.2); 
+  }
+
+
+
+
+.write_pad{
+    min-height: 50px;
+    font-family: Comic Sans MS;
+    font-size: small;
+    margin: 0px 0px 0px 0px;
+    color:black;
+}
+
+.pannels{
+    min-height: 500px;
+    background-image: url("../img/escheresque.png");
+    color: rgb(32, 129, 97);
+    padding-bottom: 20px;
+    min-width: 180px;
+}
+
+.basic{
+    padding:100px;
+    text-align: center;
+}
+
+.basic_pannel{
+    color: rgb(32, 129, 97);
+    text-align: center;
+    align-items: left;
+}
+
+.pannel_design{
+    color: rgb(32, 129, 97);
+    background-color: rgb(172, 194, 185);
+    text-align: center;
+    white-space: nowrap;
+    font-size: 10px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.pannel_design:hover{
+    background-color: rgb(154, 169, 250);
+    text-align: center;
+}
+
+.active{
+    background-color: rgb(175, 185, 245);
+    text-align: center;
+}
+
+.chat_box{
+    background-color: rgb(237, 240, 230);
+    height: 50px;
+    text-decoration: none;
+    color:rgb(16, 19, 212);
+}
+
+.chat_box:hover{
+    background-color:rgb(224, 241, 245);
+    height: 50px;
+    text-decoration: none;
+    color:rgb(16, 19, 212);
+}
+
+.custom-input-file input[type="file"] {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.img_box{
+    padding-left: 5px;
+    margin-right: 5px;
+    display: inline;
+    float: left;
+    width: 50px;
+    position: absolute;
+}
+
+.detail_box{
+    padding-left: 10px;
+    margin-left: 55px;
+    display:inline;
+    float:left;
+    width: 100%;
+    overflow: auto;
+}
+
+
+.box_top{
+    text-align: left;
+    color:rgb(16, 19, 212);
+    text-decoration: none;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: larger;
+    float: left;
+}
+
+.box_bottom{
+    text-align: right;
+    float: right;
+    color:rgb(86, 89, 240);
+    text-decoration: none;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-size: x-small;
+    font-family: Verdana;
+}
+
+.search_class{
+    padding-top:5px;
+    padding-bottom: 5px;
+    align-items: left;
+}
+
+.inline_a{
+    display: inline-block;
+    align-self: left;
+    width: 80%;
+}
+.inline_b{
+    display: inline-block;
+    align-self: left;
+    width: 10%;
+}
+
+.input-group .fa-search{
+    display: table-cell;
+  }
+
+.input_box{
+    height: 10vh;
+    width: 100%;
+    align-self: center;
+    border-radius: 10px;
+    padding: 3px;
+    border:none;
+    outline: none;
+    color: black;
+}
+
+.upload_files{
+    color:rgb(24, 3, 3);
+    padding: 0px 3px 0px 3px;
+    margin: 2px;
+    font-size: x-small;
+    font-weight: bold;
+    font-family: monospace ;
+    background-color: rgb(255, 255, 255);
+    border-radius:5px;
+}
+
+textarea:focus , .input_box:focus{
+    color: black;
+    outline: none;
+}
+
+.receive{
+    border:1px solid rgb(184, 183, 182);
+    background-color: rgb(177, 198, 238);
+    color: black;
+    margin: 5px;
+    padding: 5px 25px 5px  25px ;
+    max-width: 90%;
+    width: fit-content;
+    border-radius: 20px 20px 20px 0px;
+    float:left;
+    align-items : left;
+}
+
+.send{
+    width: fit-content;
+    border:1px solid rgb(184, 183, 182);
+    background-color: white;
+    color: black;
+    margin: 5px;
+    padding: 5px  25px 5px 25px ;
+    max-width: 90%;
+    border-radius: 20px 20px 0px 20px;
+    float:right;
+    align-items: right;
+}
+
+.auther{
+    font-weight: bold;
+    width: fit-content;
+    font-style: normal;
+    font-family: monospace;
+    font-size: large;
+}
+
+.content{
+    position: relative;
+    word-wrap: break-word;
+    font-style: bold;
+    font-family: Tahoma;
+    font-size: small;
+}
+
+.send .row .time{
+    font-style: italic;
+    font-size: x-small;
+    font-family: Verdana;
+    text-align: left;
+    float:left;
+    min-width: fit-content;
+    max-width: inherit;
+    color: rgb(114, 114, 112);
+}
+
+.receive .timebox {
+    float:right;
+}
+
+.receive .row .time{
+    font-style: italic;
+    font-size: x-small;
+    font-family: Verdana;
+    text-align: right;
+    min-width: fit-content;
+    float: right;
+    max-width: inherit;
+    color: ivory;
+}
+
+.file_box{
+width: fit-content;
+}
+
+.file_link{
+    float: inline-start;
+    height: auto;
+    padding:3px;
+    width: 40vw;
+}
+
+.container{
+    width: fit-content;
+}

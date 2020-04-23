@@ -21,6 +21,9 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.home , name='home'),
+    path('api/v1/', include('chatter.api_urls')),
+    path('api/v2/', include('chat.api_urls')),
+    path('api/v3/', include('accounts.api_urls')),
     path('about/', views.about , name='about'),
     path('admin/', admin.site.urls),
     path('accounts/',include('accounts.urls')),

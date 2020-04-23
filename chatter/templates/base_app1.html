@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Home Template</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+</head>
+<body>
+    <div class=header>
+        <h1>Chatter</h1>
+    </div>
+    <div class=nav>
+        <li><a href='/'>Home</a></li> 
+        {% if user.is_authenticated %}    
+        <li>{{ user.username }}</li>
+        <li><a href='/accounts/logout'>Logout</a></li>
+        {% else %}
+        <li><a href='/accounts/register'>Register</a></li>
+        <li><a href='/accounts/login'>Login</a></li>
+        {% endif%}
+        <li><a href='/about'>About</a></li>
+    </div>
+    <div class=main>
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class=footer>
+        All rights reserved @sutanu.p
+    </div>
+</body>
+</html>

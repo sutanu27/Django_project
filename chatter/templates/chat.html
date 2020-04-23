@@ -1,15 +1,61 @@
 {% extends "base_app.html" %}
 {% block content %}
-{% if user.is_authenticated %}
-<p><a href='/accounts/contacts'>contacts</a></p>
-<p><a href='/accounts/create_group'>create group</a></p>
-<p><a href='/chat/search'>search</a></p>
-<h3>Chats</h1>
-{% for chatroom in chatrooms %}
-<li><a  href= "/chat/chatroom/{{ chatroom.link }}/" ><b>{{ chatroom.name }} </b>  {{ chatroom.timestamp }}</a></li>
-{% endfor %}
-{% else %}
-Hey! I am chatter!
-Chat with me!!
-{% endif %}
+<div class="container-fluid "> 
+    <div class="row">
+        <div class='col-sm-9 main'>
+            {% if user.is_authenticated %}
+            {% else %}
+            <div class="basic">
+                <h2>Hey! I am chatter!</h2>
+                <h2>Chat with me!!</h2>
+            </div>
+            {% endif %}
+        </div> 
+        <div id='pannel_id' class='col-sm-3 pannels'><h1></h1>
+            {% if user.is_authenticated %}
+            <div class="row" >
+                <a class="col-lg-4 btn pannel_design border active" href='/chat'>CHAT</a>
+                <a class="col-lg-4 btn pannel_design border" href='/accounts/contacts'>CONTACTS</a>
+                <a class="col-lg-4 btn pannel_design border" href='/chat/search'>SEARCH</a>
+              </div>
+                {% for chatroom in chatrooms %}
+                <div class="row chat_box border">
+                    <div class="col-2">
+                        <img src="{{ chatroom.img_link }}" class="rounded-circle" width="45" height="45">
+                    </div>
+                    <div class="col-10">
+                        <a style="text-decoration: none;" href= "/chat/chatroom/{{ chatroom.link }}/" >
+                            <div class="row  ">
+                                    <div class="box_top col-xl-12"><b>{{ chatroom.name }} </b></div>
+                                    <div class="box_bottom col-xl-12">{{ chatroom.timestamp }}</div>
+                            </div>
+                        </a>
+    
+                    </div>
+                </div>
+            {% endfor %}
+            {% else %}
+            <div class="basic_pannel">
+                <h3> Log In </h3>
+                <form action="/accounts/login" method="post">
+                    {% csrf_token %}
+                    <p><label for="username">USERNAME</label></p>
+                    <p><input class="form-control" type="text" id="username" name="username"></p>
+                    <p><label for="password">PASSWORD</label></p>
+                    <p><input class="form-control" type="password" id="password" name="password"></p>
+                    <input type="submit" class="btn btn-primary" value="Sign in">
+                    <a href='/accounts/register' class="btn btn-primary">Sign up</a>
+                </form>
+                <div>
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                </div>   
+            </div>
+            {% endif %}
+        </div> 
+    </div>
+</div>
 {% endblock %}
+
+
