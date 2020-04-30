@@ -16,14 +16,22 @@ class MessagesChatroomSerializer(serializers.Serializer):
     content=serializers.CharField()
     file_msg_link=serializers.CharField()
 
-class ChatRoomSerializer(serializers.Serializer):
-    roomie=UserSerializer(many=True)
+class ChatRoomSerializerApi(serializers.ModelSerializer):
     class Meta:
         model=ChatRoom
         fields='__all__'
 
-class messagesSerializer(serializers.HyperlinkedModelSerializer):
-    auther=UserSerializer(many=True)
+class messagesSerializer(serializers.ModelSerializer):
+    auther=UserSerializer()
     class Meta:
         model=messages
         fields='__all__'
+
+class profileSerializer(serializers.Serializer):
+    username=serializers.DateTimeField()
+    name=serializers.CharField()
+    email=serializers.CharField()
+    img_link=serializers.CharField()
+    status=serializers.CharField()
+    is_group=serializers.BooleanField()
+    members=ChatRoomSerializer(many=True)

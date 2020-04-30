@@ -6,6 +6,12 @@ from accounts.models import Contacts, Profile
 from chat.models import ChatRoom
 from django.http import HttpResponse, JsonResponse
 from .serializers import *
+from rest_framework.decorators import api_view
+import json
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser
+from rest_framework import viewsets, generics, views
+from rest_framework.response import Response
 
 # Create your views here.
 def register(request):
@@ -89,6 +95,7 @@ def add_contact(request) :
             return redirect('add_contacts')
     else:
         return redirect('contacts')
+        
 
 @login_required(login_url='/')
 def create_group(request):
@@ -142,21 +149,76 @@ def add_users_to_group(request):
 def profile(request):
     render (request,'profile')
 
-
-    
 @login_required(login_url='/')
+@api_view(['GET', 'POST'])    
 def ContactsApi(request) :
     usr=request.user
-    cntcs=Contacts.objects.filter(host=usr).order_by('first_name','last_name')
-    contacts=[]
-    for cntc in cntcs:
-        img_link=User.objects.filter(username=cntc.username).first().profile.profile_image.url
-        contacts.append(
-            {
-                'full_name':cntc.first_name+' '+cntc.last_name,
-                'username': cntc.username,
-                'img_link': img_link
-            }
-        )
-    serializer=ContactsSerializer(contacts,many=True)
-    return JsonResponse(serializer.data, safe=False)
+    if request.method == 'GET':
+        cntcs=Contacts.objects.filter(host=usr).order_by('first_name','last_name')
+        contacts=[]
+        for cntc in cntcs:
+            if User.objects.filter(username=cntc.username).first():
+                img_link=User.objects.filter(username=cntc.username).first().profile.profile_image.url
+            else:
+                img_link=''
+            contacts.append(
+                {
+                    'full_name':cntc.first_name+' '+cntc.last_name,
+                    'username': cntc.username,
+                    'img_link': img_link
+                }
+            )
+        try:
+            room_id=request.GET['roomid']
+            room=ChatRoom.objects.filter(id=room_id).first()
+            roommate=[ roomie.username for roomie in room.roomie.all()]
+            contacts=[ contact for contact in contacts if contact['username'] not in roommate ]
+            serializer=ContactsSerializer(contacts,many=True)
+            return JsonResponse(serializer.data, safe=False)
+        except:
+            serializer=ContactsSerializer(contacts,many=True)
+            return JsonResponse(serializer.data, safe=False)
+    if request.method == 'POST':
+        first_name=request.data['first_name']
+        last_name=request.data['last_name']
+        username=request.data['username']
+        if User.objects.filter(username=username).exclude(username=request.user.username).exists():
+            Contacts.objects.create(host=request.user, first_name=first_name, last_name=last_name, username=username)
+            return JsonResponse({'message':'Contact has been Created'}, safe=False)
+        else:
+            return JsonResponse({'message':'user doesnot extsts'}, safe=False, status=400)
+    else:
+        pass
+
+
+
+
+class ProfileApi(views.APIView) :
+    parser_class = (FileUploadParser,)
+
+    def get(self, request,format=None):
+        usr=request.user
+        profile=Profile.objects.filter(host=usr).first()
+        serializer=ProfileSerializerApi(profile)
+        return Response(serializer.data)
+
+    def put(self, request ):
+        usr=request.user
+        data=json.loads(request.data['data'])
+        instance=Profile.objects.filter(host=usr).first()
+        if instance:
+            serializer=ProfileSerializerApi(instance,data=data , partial=True)
+            if serializer.is_valid():
+                try:
+                    image=request.data['image']
+                    instance.profile_image.save(image.name,image,save=True)
+                except:
+                    pass
+                serializer.save()
+                return Response(serializer.data,status=200)
+            else:
+                return Response(serializer.errors,status=400)
+        else:
+            return Response({'message':'profile doesnot extsts'}, status=400)
+
+

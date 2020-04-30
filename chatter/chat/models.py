@@ -9,9 +9,10 @@ import uuid
 
 
 class ChatRoom(models.Model):
-    roomie=models.ManyToManyField(User,related_name='roommate', symmetrical=True,)
-    group=models.BooleanField()	
-    group_name=models.TextField(null=True,blank=True)
+    roomie=models.ManyToManyField(User,related_name='roommate', symmetrical=True, blank=True )
+    group=models.BooleanField(default=False)	
+    group_name=models.TextField(null=True)
+    group_admins=models.ManyToManyField(User,related_name='admins', symmetrical=True, blank=True)
     create_datetime=models.DateTimeField(auto_now_add=True)
     group_image=models.ImageField(upload_to='accounts/images/', default='accounts/images/default_group_image.png')
 

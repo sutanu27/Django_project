@@ -4,5 +4,6 @@ from rest_framework import routers
 
 
 urlpatterns = [
-    path('Contact/', ContactsApi)
+    path('Contact/', ContactsApi),
+    path('profileapi/',ProfileApi.as_view())
     ]

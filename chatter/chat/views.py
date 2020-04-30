@@ -1,13 +1,15 @@
 from django.shortcuts import render ,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from accounts.models import Contacts
+from accounts.models import *
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
 from .serializers import *
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, views
 from django.http import HttpResponse, JsonResponse
 from .models import *
+from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 
 # Create your views here.
 @login_required(login_url='')
@@ -147,10 +149,103 @@ def chatRoomsApi(request,username=''):
     serializer=ChatRoomSerializer(Chatrooms,many=True)
     return JsonResponse(serializer.data, safe=False)
 
-class messagesViewsets(viewsets.ModelViewSet):
-    queryset=messages.objects.all()
-    serializer_class=messagesSerializer
+class messagesViewapi(views.APIView):
+    def get(self, request, id=None):
+        if id:
+            msgs=messages.objects.get(id=id)
+            serializer=messagesSerializer(msgs)
+            return Response(serializer.data)
 
-class chatroomsViewsets(viewsets.ModelViewSet):
-    queryset=ChatRoom.objects.all()
-    serializer_class=ChatRoomSerializer
+        msgs=messages.objects.all()
+        serializer=messagesSerializer(msgs,many=True)
+        return Response(serializer.data)
+
+    def post(self, request, id=None):
+        user=request.user
+
+
+
+class chatroomsViewapi(views.APIView):
+    def get(self, request,id=None):
+        if id:
+            chatroom=ChatRoom.objects.get(id=id)
+            serializer=ChatRoomSerializerApi(chatroom)
+            return Response(serializer.data)
+
+        chatroom=ChatRoom.objects.all()
+        serializer=ChatRoomSerializerApi(chatroom,many=True)
+        return Response(serializer.data)
+
+    def put(self, request, id=None):
+        instance=ChatRoom.objects.get(id=id)
+        try:
+            username=request.data['newroomie']
+            user=User.objects.filter(username=username).first()
+            if user:
+                instance.roomie.add(user)
+                instance.save()
+                return Response({ 'status': 'new user is added'},status=200)
+            else:
+                return Response(serializer.errors,status=400)
+        except:
+            data=request.data
+            serializer=ChatRoomSerializerApi(instance,data=data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=200)
+            return Response(serializer.errors,status=400)
+
+    def post(self, request):
+        try:
+            user=request.user
+            group_name=request.data['group_with_current_user']
+            instance=ChatRoom.objects.create(group=True,group_name=group_name)
+            instance.roomie.add(user)
+            instance.save()
+            return Response({'message':'Group has been Created'},status=200)
+        except:
+            if group_name:
+                return Response({ 'message': 'Chatroom has not been created'},status=400)
+            data=request.data
+            serializer=ChatRoomSerializerApi(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=200)
+            return Response(serializer.errors,status=400)
+
+@login_required(login_url='/')
+def profileView(request,room_id='') :
+    profile=[]
+    usr=request.user
+    if room_id :
+        cr=ChatRoom.objects.filter(id=room_id).first()
+        if cr:
+            roomie=cr.roomie.all()
+            opponent=roomie.exclude(username=usr.username).first()
+            username= '' if cr.group else opponent.username
+            name=cr.guest_name(usr)
+            email= '' if cr.group else opponent.email
+            img_link=cr.room_image(usr)
+            is_group= cr.group
+            members= [ jsonify_room(get_create_room(user1=usr,user2=roommate),usr) for roommate in roomie] if cr.group else []
+            status= '' if cr.group else opponent.profile.status
+    else :
+            username=usr.username
+            name=usr.first_name+' '+usr.last_name
+            email= usr.email
+            img_link=usr.profile.profile_image.url
+            is_group= False
+            members= []
+            status=usr.profile.status
+
+    profile={
+    'username':username,
+    'name':name,
+    'email':email,
+    'img_link':img_link,
+    'is_group':is_group,
+    'members':members,
+    'status':status
+    }
+    serializer=profileSerializer(profile)
+    return JsonResponse(serializer.data, safe=False)
