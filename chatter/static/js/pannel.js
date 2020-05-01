@@ -4,12 +4,19 @@ window.onclick=function(event) {
     this.app5.contacts=[]
 }
 
-function setActive(target_class,i){
+
+
+function setActive(target_class){
     var btns = document.getElementsByClassName(target_class);
     var current = document.getElementsByClassName(target_class+" active");
     if(current.length!=0)
     current[0].className = current[0].className.replace(" active", "");
-    btns[i].className += " active";
+    for(i=0;i<btns.length;i++){
+        if (btns[i].id==app5.currentChatRoomId){
+            btns[i].className += " active";
+            break;
+        }
+    }
 }
 
 
@@ -18,7 +25,8 @@ var app1=new Vue({
     delimiters: ['[{', '}]'],
     data:{
         active:'',
-        chatroom_url:'http://'+window.location.host+'/api/v2/ChatRoom/'
+        chatroom_url:'http://'+window.location.host+'/api/v2/ChatRoom/',
+        timer:null
     },
     methods: {
         renderChat(){
@@ -35,13 +43,18 @@ var app1=new Vue({
                 for(var i=0; i<response.data.length; i++){
                     var a=response.data[i];
                     app.chatrooms.push({img_link:a.img_link, openchat:a.link , first_arg: a.name, second_arg:a.timestamp, is_group:a.is_group, has_room_id:true});
-                
                 }
                 
             }).catch(function(error){
                 console.log(error)
             })
-        }
+        },
+        renderChatRepeated(){
+            app1.timer=window.setInterval(() => {
+                 app1.renderChat()
+                 },500);
+             }
+              
     }
 })
 
@@ -69,6 +82,7 @@ var app2=new Vue({
                     var a=response.data[i];
                     app.chatrooms.push({img_link:a.img_link, openchat:a.username , first_arg: a.full_name, second_arg:a.username,has_room_id:false, is_group:false});
                 }
+            setTimeout(() => { setActive("chat_box") }, 50);
             }).catch(function(error){
                 console.log(error)
             })
@@ -219,6 +233,8 @@ var app5=new Vue({
             app.renderChatWindow({img_link:a.img_link, openchat:a.link , first_arg: a.name, second_arg:a.timestamp, is_group:a.is_group, has_room_id:true},null);
         },
         displayProfile(room_id){
+            document.getElementsByClassName('loading')[0].classList=' loading'
+
             var api_url='http://'+window.location.host+'/api/v2/profile/'+room_id
             var is_self=false
             if (room_id=='')
@@ -240,7 +256,7 @@ var app5=new Vue({
         addFiles(event){
             this.files=[]
             for(var i=0;i<event.target.files.length;i++){
-                this.files.push(event.target.files[0]);
+                this.files.push(event.target.files[i]);
             }
         },
         sendMessage(event){
@@ -254,33 +270,48 @@ var app5=new Vue({
                 var upload_status='started';
                 var file_name=this.files[0].name;
             }
-
-
-            rawData={
+            var rawData={
                 'message_content': this.message_content,
                 'is_file': is_file,
                 'file_size':file_size,
                 'upload_status':upload_status,
                 'file_name':file_name
             }
+
             rawData = JSON.stringify(rawData)
-            
-            if(this.message_content!='' ){
+            if(this.message_content!='' || this.files.length!=0){
                 if(app.chatSocket){
                         app.chatSocket.send(rawData);
                         if (is_file)
                             app.chatSocket.send(this.files[0],{ binary: true });  
+                            for( i=1;i<this.files.length;i++){
+                                file_size=this.files[i].size;
+                                upload_status='started';
+                                file_name=this.files[i].name;
+                
+                                var blankrawData={
+                                    'message_content': '',
+                                    'is_file': is_file,
+                                    'file_size':file_size,
+                                    'upload_status':upload_status,
+                                    'file_name':file_name
+                                }
+                                console.log(blankrawData);                    
+                                app.chatSocket.send(JSON.stringify(blankrawData));
+                                app.chatSocket.send(this.files[i],{ binary: true });  
+                            }
                     }
                 else{
                     alert("ChatRoom doesn't extst.\n Refresh this Page.");
                 }
             }
             this.message_content=''
+            this.files=[]
         }
     },
-    updated: function () {
+    updated() {
         setScroll()
-      }    
+      }
 
 })
 
@@ -294,16 +325,16 @@ var app=new Vue({
         'chatbox-component':{
             props:['on_chatroom','chatindex'],
             methods:{
-                renderChatWindow(arg,i){
-                    app.renderChatWindow(arg,i)
+                renderChatWindow(arg){
+                    app.renderChatWindow(arg)
                 }
             },
             template:
-        ` <div class="row chat_box  border " >
+        ` <div class="row chat_box  border " :id="on_chatroom.openchat">
                 <div class="img_box ">
                     <img :src="on_chatroom.img_link"  class="rounded-circle border" width="45" height="45">
                 </div>
-                <a style="text-decoration: none;" class="detail_box container-fluid" v-on:click="renderChatWindow(on_chatroom , chatindex )" >
+                <a style="text-decoration: none;" class="detail_box container-fluid" v-on:click="renderChatWindow(on_chatroom )" >
                     <div class="row ">
                             <div class="box_top col-12">{{ on_chatroom.first_arg }}</div>
                             <div class="box_bottom col-12">{{ on_chatroom.second_arg }}</div>
@@ -402,9 +433,9 @@ var app=new Vue({
                 console.log(error)
             })
         },
-        renderChatWindow(arg,index){
-            if(index!=null)
-            setActive("chat_box",index)
+        renderChatWindow(arg){
+            document.getElementsByClassName('loading')[0].classList=' loading'
+
             if(!arg.has_room_id){
                 this.findRoomId(arg)
             }
@@ -423,10 +454,16 @@ var app=new Vue({
                     for(var i=0; i<response.data.length; i++){
                         var a=response.data[i];
                         app5.chatmessages.push(a);
+                        $('.chat_window').scrollTop($('.chat_window')[0].scrollHeight);
                     }
                 }).catch(function(error){
                     console.log(error)
                 })    
+
+                if (app.chatSocket!=null)
+                {
+                    app.chatSocket.close()
+                }
                 this.chatSocket = new ReconnectingWebSocket(
                     'ws://' + window.location.host +
                     '/ws/chat/' + app5.currentChatRoomId + '/');
@@ -434,14 +471,13 @@ var app=new Vue({
 
                 this.chatSocket.onmessage = function(e) {
                     var data = JSON.parse(e.data).message;
-                    console.log(data)
-                    app5.chatmessages.push({auther_name: data['auther'], is_send: true, time_stamp: data['timestamp'], content: data['content'], file_msg_link: data['file_msg_url']});    
+                    app5.chatmessages.push({auther_name: data['auther'], is_send: data['auther']==user, time_stamp: data['timestamp'], content: data['content'], file_msg_link: data['file_msg_url']});    
                     app1.renderChat()
                 };
-                
                 this.chatSocket.onclose = function(e) {
                     console.error('Chat socket closed unexpectedly');
                 };
+                setActive('chat_box')
             }            
         },
         findRoomId(arg){
@@ -458,6 +494,10 @@ var app=new Vue({
     mounted(){
         app1.renderChat();
         app5.displayProfile('');
+    },
+    updated(){
+        setActive('chat_box')
+        document.getElementsByClassName('loading')[0].classList+=' hide';  
     }
 })
 

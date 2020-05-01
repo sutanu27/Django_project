@@ -23,6 +23,16 @@
     display: none;
 }
 
+.loading{
+    min-height: 80vh;
+    position: absolute;
+    width:  100%;
+    height:  100%;
+    background: rgb(255, 255, 255) url("../img/preloader.gif") center;
+    z-index: 1;
+}
+
+
 .profile{
     min-height: 80vh;
     position: relative;

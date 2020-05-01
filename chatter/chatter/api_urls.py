@@ -8,5 +8,6 @@ router.register('',UserViewsets)
 
 urlpatterns = [
     path('User', include(router.urls)),
-    path('findusers/<str:username_substr>', userSubStrApi)
+    path('findusers/<str:username_substr>', userSubStrApi),
+    path('findusers/', userSubStrApi)
     ]

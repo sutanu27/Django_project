@@ -92,7 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(text_data)
             await self.add_new_msg(data=text_data_json)
         if bytes_data:
-            print(bytes_data)
+            print('bytes_data')
             await self.uploadFile(file_content=bytes_data)
 
 
