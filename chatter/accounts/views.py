@@ -165,7 +165,7 @@ def ContactsApi(request) :
                 {
                     'full_name':cntc.first_name+' '+cntc.last_name,
                     'username': cntc.username,
-                    'img_link': img_link
+                    'room_image_url': img_link
                 }
             )
         try:

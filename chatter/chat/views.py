@@ -37,8 +37,18 @@ def chatroom(request, room_id):
     else:
         raise PermissionDenied("You do not have permission")
 
+def get_room(user):
+    prof=user.profile
+    return {
+        'full_name':user.first_name+' '+user.last_name,
+        'username':user.username,
+        'img_link': prof.profile_image.url
+        }
+
 
 def get_create_room(user1,user2):
+    if user1==user2:
+        return None
     chatroom1=user1.roommate.filter(group=False)
     chatroom2=user2.roommate.filter(group=False)
     chatroom=set(chatroom2).intersection(chatroom1)
@@ -115,7 +125,7 @@ def chatroomMessageViewApi(request):
                 "file_msg_link":file_url,
                 "time_stamp":msg.timestamp.strftime('%Y-%m-%d %H:%M'),
                 "auther_name":auther_name,
-                "is_send": is_send
+                "sender": msg.auther
             })
 
     serializer=MessagesChatroomSerializer(messages,many=True)
@@ -161,19 +171,45 @@ class messagesViewapi(views.APIView):
         return Response(serializer.data)
 
     def post(self, request, id=None):
-        user=request.user
+        user=request.data
 
 
 
 class chatroomsViewapi(views.APIView):
     def get(self, request,id=None):
+        usr=request.user
+        chatrooms=[]
         if id:
-            chatroom=ChatRoom.objects.get(id=id)
+            cr=ChatRoom.objects.get(id=id)
+            chatroom={
+                        'roomie': cr.roomie,
+                        'group': cr.group,
+                        'lastping':cr.lastping,
+                        'messages':cr.messages,
+                        'lastmsg':cr.lastmsg,
+                        'room_image_url':cr.room_image(usr),
+                        'guest_name':cr.guest_name(usr),
+                        'id':cr.id
+                    }
             serializer=ChatRoomSerializerApi(chatroom)
             return Response(serializer.data)
 
-        chatroom=ChatRoom.objects.all()
-        serializer=ChatRoomSerializerApi(chatroom,many=True)
+        for cr in usr.roommate.all():
+            chatrooms.append(
+                {
+                    'roomie': cr.roomie,
+                    'group': cr.group,
+                    'lastping':cr.lastping,
+                    'messages':cr.messages,
+                    'lastmsg':cr.lastmsg,
+                    'room_image_url':cr.room_image(usr),
+                    'guest_name':cr.guest_name(usr),
+                    'id':cr.id
+                }
+            )
+
+        Chatrooms=sorted(chatrooms, key=lambda x: x['lastping'], reverse = True)
+        serializer=ChatRoomSerializerApi(Chatrooms,many=True)
         return Response(serializer.data)
 
     def put(self, request, id=None):
@@ -199,8 +235,13 @@ class chatroomsViewapi(views.APIView):
         try:
             user=request.user
             group_name=request.data['group_with_current_user']
+            new_roomies=request.data['added_contacts']
             instance=ChatRoom.objects.create(group=True,group_name=group_name)
             instance.roomie.add(user)
+            for roommate in new_roomies:
+                print(roommate)
+                new_user=User.objects.get(username=roommate)
+                instance.roomie.add(new_user)
             instance.save()
             return Response({'message':'Group has been Created'},status=200)
         except:
@@ -227,16 +268,16 @@ def profileView(request,room_id='') :
             email= '' if cr.group else opponent.email
             img_link=cr.room_image(usr)
             is_group= cr.group
-            members= [ jsonify_room(get_create_room(user1=usr,user2=roommate),usr) for roommate in roomie] if cr.group else []
+            members= [ get_room(roommate) for roommate in roomie] if cr.group else []
             status= '' if cr.group else opponent.profile.status
     else :
-            username=usr.username
-            name=usr.first_name+' '+usr.last_name
-            email= usr.email
-            img_link=usr.profile.profile_image.url
-            is_group= False
-            members= []
-            status=usr.profile.status
+        username=usr.username
+        name=usr.first_name+' '+usr.last_name
+        email= usr.email
+        img_link=usr.profile.profile_image.url
+        is_group= False
+        members= []
+        status=usr.profile.status
 
     profile={
     'username':username,

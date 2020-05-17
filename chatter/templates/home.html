@@ -1,115 +1,123 @@
 {% extends "base_app.html" %}
 {% load static %}
 {% block content %}
-<div class="container-fluid "> 
+<div class="container-fluid ">
     <div class="row">
-        <div class='col-md-9 main' id="main">
+        <div class='col-md-9 main'>
             {% if user.is_authenticated %}
             <div class="row">
                 <div class="loading"></div>
             </div>
             <div class=' row' v-if='profile'>
-                <div class="profile">
+                <div class="profile" id="profile">
                     <i class="fa fa-window-close close_button" aria-hidden="true" @click="profile=null"></i>
-                    <i class="fa fa-save close_button" aria-hidden="true" v-show="profile.is_self" @click="saveEditedProfile"></i>
-                    <img :src="profile.data.img_link" class="profile_image" data-toggle="modal" id='modal_profile_image' data-target="#profileModal"> 
+                    <i class="fa fa-save close_button" aria-hidden="true" v-show="profile.is_self"
+                        @click="saveEditedProfile"></i>
+                    <img :src="profile.data.img_link" class="profile_image" data-toggle="modal" id='modal_profile_image'
+                        data-target="#profileModal">
                     <label class="profile_details">
-                        <div ><b> Name     :</b>
-                            <label class="owner_profile_name" > 
-                                [{ profile.data.name }]  
-                                <i class="fa fa-edit" v-show="profile.is_self" style="color: blue;" onclick="toggleInput('owner_profile_name')"></i>
-                            </label> 
-                            <label for="profile_name_input " class="owner_profile_name hide" v-show="profile.is_self" style="color: blue;">
-                                <input type="text"  v-model="profile.data.name" id="profile_name_input">
-                                <i class="fa fa-window-close"  onclick="toggleInput('owner_profile_name')"></i>
-                            </label> 
+                        <div><b> Name :</b>
+                            <label class="owner_profile_name">
+                                [{ profile.data.name }]
+                                <i class="fa fa-edit" v-show="profile.is_self" style="color: blue;"
+                                    onclick="toggleProfileInput('owner_profile_name')"></i>
+                            </label>
+                            <label for="profile_name_input " class="owner_profile_name hide" v-show="profile.is_self"
+                                style="color: blue;">
+                                <input type="text" v-model="profile.data.name" id="profile_name_input"
+                                    :size="profile.data.name.length">
+                                <i class="fa fa-window-close" onclick="toggleProfileInput('owner_profile_name')"></i>
+                            </label>
                         </div>
-                        <div  v-show="!profile.data.is_group"><b> Username     :</b>
-                            <label class="owner_profile_username" > 
-                                [{ profile.data.username }]  
-                            </label> 
+                        <div v-show="!profile.data.is_group"><b> Username :</b>
+                            <label class="owner_profile_username">
+                                [{ profile.data.username }]
+                            </label>
                         </div>
-                        <div  v-show="!profile.data.is_group"><b> E-mail     :</b>
-                            <label class="owner_profile_email" > 
-                                [{ profile.data.email }]  
-                                <i class="fa fa-edit" v-show="profile.is_self" style="color: blue;" onclick="toggleInput('owner_profile_email')"></i>
-                            </label> 
-                            <label for="profile_email_input " class="owner_profile_email hide" v-show="profile.is_self" style="color: blue;">
-                                <input type="text" :style="profile.is_self==false? 'display: none':'outline: none;' " v-model="profile.data.email" id="profile_email_input">
-                                <i class="fa fa-window-close"  onclick="toggleInput('owner_profile_email')"></i>
-                            </label> 
+                        <div v-show="!profile.data.is_group"><b> E-mail :</b>
+                            <label class="owner_profile_email">
+                                [{ profile.data.email }]
+                                <i class="fa fa-edit" v-show="profile.is_self" style="color: blue;"
+                                    onclick="toggleProfileInput('owner_profile_email')"></i>
+                            </label>
+                            <label for="profile_email_input " class="owner_profile_email hide" v-show="profile.is_self"
+                                style="color: blue;">
+                                <input type="text" v-model="profile.data.email" id="profile_email_input"
+                                    :size="profile.data.email.length">
+                                <i class="fa fa-window-close" onclick="toggleProfileInput('owner_profile_email')"></i>
+                            </label>
                         </div>
                     </label>
-                    <div v-if="profile.data.is_group" >
+                    <div v-if="profile.data.is_group">
                         <div class='status'>Members</div>
-                        <div  v-for="member in profile.data.members"> 
-                            <div class='member' @click="renderChatWindow(member)">[{member.name}]</div>
-                        </div>    
+                        <div v-for="member in profile.data.members">
+                            <chatbox-component class="member"  :on_chatroom="member"></chatbox-component>
+                        </div>
                     </div>
-                    <div class='status' v-else> 
-                        <label class="owner_profile_status" > 
-                            [{ profile.data.status }]  
-                            <i class="fa fa-edit" v-show="profile.is_self" style="color: blue;" onclick="toggleInput('owner_profile_status')"></i>
-                        </label> 
-                        <label for="profile_status_input" class="owner_profile_status hide" v-show="profile.is_self" style="color: blue;">
-                            <input type="text" :style="profile.is_self==false? 'display: none':'outline: none;' " v-model="profile.data.status" id="profile_status_input">
-                            <i class="fa fa-window-close"  onclick="toggleInput('owner_profile_status')"></i>
-                        </label> 
+                    <div class='status' v-else>
+                        <label class="owner_profile_status">
+                            [{ profile.data.status }]
+                            <i class="fa fa-edit" v-show="profile.is_self" style="color: blue;"
+                                onclick="toggleProfileInput('owner_profile_status')"></i>
+                        </label>
+                        <label for="profile_status_input" class="owner_profile_status hide" v-show="profile.is_self"
+                            style="color: blue;">
+                            <input type="text" v-model="profile.data.status" id="profile_status_input"
+                                :size="profile.data.status.length">
+                            <i class="fa fa-window-close" onclick="toggleProfileInput('owner_profile_status')"></i>
+                        </label>
                     </div>
                     <div class="modal fade" id="profileModal" role="dialog">
-                        <div class="modal-dialog modal-xl"  style="max-width: max-content;">
-                        
-                          <!-- Modal content-->
-                          <div class="modal-content">
+                        <div class="modal-dialog modal-xl" style="max-width: max-content;">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" onclick="profile_image_file=null">&times;</button>
-                                  </div>
-                                  <div class="modal-body ">
-                                      <img :src="profile.data.img_link" class="image_size" id="modal_image">
-                                      <label for="profile-image-input"  style="float:right; color: blue;">
-                                          <i class="fa fa-edit" v-show="profile.is_self"></i>
-                                          <input type="file" class="custom-file-input" style="display: none;"  accept="image/*" onchange="preview_image(event)"
-                                           name="profile-image-input" id="profile-image-input">
-                                      </label>             
-                                  </div>
-                                  <div class="modal-footer"  v-show="profile.is_self">
-                                    <button type="button" onclick="on_preview()" data-dismiss="modal" class="btn btn-default">Preview Profile</button>
-                                  </div>      
-                          </div>
-                          
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        onclick="profile_image_file=null">&times;</button>
+                                </div>
+                                <div class="modal-body ">
+                                    <img :src="profile.data.img_link" class="image_size" id="modal_image">
+                                    <label for="profile-image-input" style="float:right; color: blue;">
+                                        <i class="fa fa-edit" v-show="profile.is_self"></i>
+                                        <input type="file" class="custom-file-input" style="display: none;"
+                                            accept="image/*" onchange="preview_image(event)" name="profile-image-input"
+                                            id="profile-image-input">
+                                    </label>
+                                </div>
+                                <div class="modal-footer" v-show="profile.is_self">
+                                    <button type="button" onclick="on_preview()" data-dismiss="modal"
+                                        class="btn btn-default">Preview Profile</button>
+                                </div>
+                            </div>
                         </div>
-                      </div>
+                    </div>
                 </div>
             </div>
             <div v-else>
                 <div class=' row' >
                     <div class="col-12 ">
-                        <div class='chat_header '>
-                            <img :src="currentChatRoomImage" v-show="currentChatRoomImage != ''" class="rounded-circle border" width="44" height="44" style="margin: 3px; ">
-                            <label class="chat_head_name" @click="displayProfile(currentChatRoomId)"><b>[{ currentChatRoomName }]</b></label>
-                            <label v-show="is_group" class="add_button" ><div @click="displayDropdown"><i class="fa fa-plus"></i> </div>
+                        <div class='chat_header ' v-show="chatroom">
+                            <img :src="chatroom.currentChatRoomImage" v-show="chatroom.currentChatRoomImage != ''" class="rounded-circle border" width="44" height="44" style="margin: 3px; ">
+                            <label class="chat_head_name" @click="displayProfile(chatroom.currentChatRoomId)"><b>[{ chatroom.currentChatRoomName }]</b></label>
+                            <label v-show="chatroom.is_group" class="add_button" ><div @click="displayDropdown"><i class="fa fa-plus"></i> </div>
                                 <div id="myDropdown" class="dropdown-contact" >
                                     <div  v-for="contact in contacts">
-                                        <div class="row contact_box  border " @click="contact.first_arg==''?'':addToGroup(contact.second_arg)">
-                                            <div class="img_box " v-show='contact.img_link'>
-                                                <img :src="contact.img_link"  class="rounded-circle border" width="45" height="45">
-                                            </div>
-                                            <a style="text-decoration: none;" class="detail_box container-fluid" >
-                                                <div class="row ">
-                                                        <div class="box_top col-12"> [{contact.first_arg}]</div>
-                                                        <div class="box_bottom col-12">[{contact.second_arg}]</div>
-                                                </div>
-                                            </a>
+                                        <div class="row dropdown_contact_box  border " v-if='contact.blank_arg' >
+                                            [{contact.blank_arg}]
                                         </div>
-                                </div>
+                                        <div v-else  @click="addToGroup(contact.second_arg)" >
+                                            <contact-component :on_chatroom="contact"></contact-component>
+                                        </div>
+                                    </div>
                                 </div>
                             </label>                            
                         </div>                 
                     </div>
                     <div class="col-12 " >
-                        <div class='chat_window'  v-cloak>
-                            <div  v-for="chatmessage in chatmessages"   >
-                                <message-component :chatmessage="chatmessage"  :is_group='is_group' ></message-component>    
+                        <div class='chat_window' id="chat_window_id" v-cloak>
+                            <div  v-for="chatmessage in chatroom.chatmessages"   >
+                                <message-component :chatmessage="chatmessage"  :is_group='chatroom.is_group' ></message-component>    
                             </div>
                         </div>                 
                     </div>
@@ -138,46 +146,60 @@
                 <h2>Chat with me!!</h2>
             </div>
             {% endif %}
-        </div> 
-        <div class='col-md-3 pannels' >
+        </div>
+        <div class='col-md-3 pannels' id='pannels'>
             {% if user.is_authenticated %}
-            <div class="row" >
-                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border" :class="active" v-on:click="renderChat" id='chat_pannel'>CHAT</a>
-                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border"  :class="active" v-on:click="renderContact" id='contact_pannel' >CONTACTS</a>
-                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border"  :class="active" v-on:click="renderSearch" id='search_pannel'>SEARCH</a>
+            <div class="row">
+                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border active"
+                    onclick="setActive('pannel_design',event)" @click="pannel='chat'; form=false;">CHAT</a>
+                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border" onclick="setActive('pannel_design',event)"
+                    @click="pannel='contact'; form=false;">CONTACTS</a>
+                <a class="col-lg-4 col-md-12 col-4 btn pannel_design border" onclick="setActive('pannel_design',event)"
+                    @click="pannel='search'; form=false;">SEARCH</a>
             </div>
-            <div id='pannels' >
-                <div v-if="is_search">
-                    <searchbar-component  v-model='user_sub_str' ></searchbar-component>
-                </div>
-                <div v-else>
-                    <button class='add_element btn btn-primary' v-show="!form" @click="renderCreateGroup">Create [{add_type}]</button>
-                </div>
-                <div v-if="form" >
-                    <div class="basic_pannel">
-                        <div v-if="add_type=='Group'">
-                            <p><label for="username">Group Name</label></p>
-                            <p><input class="form-control" type="text" v-model='group_name'></p>
-                            <button  @click="createGroup" class="btn btn-primary">Create</button>
+                <div v-if="pannel=='chat'">
+                    <div v-if="!form">
+                        <button class='add_element btn btn-primary'  @click="form=true">Create Group</button>
+                        <div v-for='(chatroom,index) in chatrooms' >
+                            <chatbox-component :on_chatroom='chatroom' :chatindex='index' :pannel='pannel'></chatbox-component>
                         </div>
-                        <div v-else>
+                    </div>
+                    <div v-else>
+                        <div class="basic_pannel">
+                            <p><label for="username">Group Name</label></p>
+                            <p><input class="form-control" type="text" v-model='new_group.group_name'></p>
+                            <div v-for='contact in contactlist' >
+                                <input type="checkbox" :value="contact.third_arg" v-model="new_group.added_contacts"  class='contact_tik'  ><contact-component :on_chatroom='contact'></contact-component>
+                            </div>
+                            <button @click="createGroup" class="btn btn-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="pannel=='contact'">
+                    <div v-if="!form">
+                        <button class='add_element btn btn-primary' v-show="!form" @click="form=true">Create Contact</button>
+                        <div v-for='contact in contactlist'>
+                            <chatbox-component :on_chatroom='contact' :pannel='pannel'></chatbox-component>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="basic_pannel">
                             <p><label for="username">First Name</label></p>
-                            <p><input class="form-control" type="text" v-model='first_name'></p>
-                            <p><label for="username" >Last Name</label></p>
-                            <p><input class="form-control" type="text" v-model='last_name' ></p>
+                            <p><input class="form-control" type="text" v-model='new_contact.first_name'></p>
+                            <p><label for="username">Last Name</label></p>
+                            <p><input class="form-control" type="text" v-model='new_contact.last_name'></p>
                             <p><label for="username">Username</label></p>
-                            <p><input class="form-control" type="text" v-model='username' ></p>
+                            <p><input class="form-control" type="text" v-model='new_contact.username'></p>
                             <button @click="createContact" class="btn btn-primary">Create</button>
                         </div>
                     </div>
                 </div>
-                <div v-else>
-                    <div v-for='(chatroom,index) in chatrooms'>
-                        <chatbox-component :on_chatroom='chatroom' :chatindex='index' ></chatbox-component>
-                    </div>    
+                <div v-if="pannel=='search'">
+                    <searchbar-component v-model='user_sub_str'></searchbar-component>
+                    <div v-for='(search,index) in searchlist'>
+                        <chatbox-component :on_chatroom='search' :chatindex='index' :pannel='pannel'></chatbox-component>
+                    </div>
                 </div>
-            </div>
-
             {% else %}
             <div class="basic_pannel">
                 <h3> Log In </h3>
@@ -194,14 +216,11 @@
                     {% for message in messages %}
                     <p>{{ message }}</p>
                     {% endfor %}
-                </div>   
+                </div>
             </div>
             {% endif %}
-        </div> 
+        </div>
     </div>
 </div>
 
 {% endblock %}
-
-
-

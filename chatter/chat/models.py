@@ -12,7 +12,6 @@ class ChatRoom(models.Model):
     roomie=models.ManyToManyField(User,related_name='roommate', symmetrical=True, blank=True )
     group=models.BooleanField(default=False)	
     group_name=models.TextField(null=True)
-    group_admins=models.ManyToManyField(User,related_name='admins', symmetrical=True, blank=True)
     create_datetime=models.DateTimeField(auto_now_add=True)
     group_image=models.ImageField(upload_to='accounts/images/', default='accounts/images/default_group_image.png')
 
@@ -25,8 +24,28 @@ class ChatRoom(models.Model):
             return self.create_datetime
 
     @property
+    def lastmsg(self):
+        msg=messages.objects.filter(room=self).order_by('-timestamp')
+        if msg.exists():
+            return msg.first().content
+        else:
+            return ''
+
+    @property
     def messages(self):
-        return self.room_message.all().order_by('timestamp')
+        msgs=[]
+        for msg in self.room_message.all().order_by('timestamp'):
+            msgs.append(
+                {
+                "content":msg.content,
+                "file_msg_link": msg.file_msg.url if msg.file_msg  else '',
+                "time_stamp":msg.timestamp.strftime('%Y-%m-%d %H:%M'),
+                "auther_name":msg.auther.first_name+' '+msg.auther.last_name,
+                "sender":msg.auther
+                }
+            )
+        return msgs
+
 
     def guest_name(self,user):
         if self.group:
@@ -46,7 +65,6 @@ class ChatRoom(models.Model):
             guest=self.roomie.exclude(username=user.username).first()
             guest_profile=guest.profile
             return guest_profile.profile_image.url
-
 
     def __str__(self):
         return str(self.id)

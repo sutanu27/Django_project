@@ -25,7 +25,7 @@ SECRET_KEY = 'z(&@aleq*+&rjintx2(qmnu05=dx_7%ck&9^nwik!ykmy-*s1*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,7 +42,16 @@ INSTALLED_APPS = [
     'channels',
     'chat',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

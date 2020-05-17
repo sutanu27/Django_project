@@ -23,6 +23,15 @@
     display: none;
 }
 
+
+.contact_tik{
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    }
+
 .loading{
     min-height: 80vh;
     position: absolute;
@@ -32,9 +41,13 @@
     z-index: 1;
 }
 
+@media only screen and (min-width: 767px) {
+    .profile {
+        min-height: 80vh;
+    }
+  }
 
 .profile{
-    min-height: 80vh;
     position: relative;
     width: 100%;
     height: 100%;
@@ -82,9 +95,9 @@
 
 .profile_image{
     position: absotute;
-    margin: 25px 25px;
-    height: 30vh;
-    width: auto;
+    margin: 3% ;
+    height: auto;
+    width: 15vw;
         -webkit-transform:rotate(-5deg);
         -moz-transform: rotate(-5deg);
         -ms-transform: rotate(-5deg);
@@ -95,8 +108,8 @@
 }
 
 .profile_details{
-    margin : 50px;
-    font-size: x-large;
+    margin : 6%;
+    font-size: 2vw;
     font-family: paint-font;
     color: rgb(250, 89, 25);
 }
@@ -104,18 +117,19 @@
 
 .status{
     margin : 5px 5px 5px 50px;
-    font-size: 30px;
+    font-size: 3vw;
     font-family:Grasshopper ;
     color: rgb(51, 194, 212);
 
 }
 
 .member{
-    width: fit-content;
-    margin: 5px 5px 5px 50px;
-    padding: 5px;
+    width: 25vw;
+    min-width: 180px;
+    height: auto;
+    margin: 5px 5px 5px 25px;
     background-color: rgb(250, 248, 245);
-    font-size: 20px;
+    font-size: medium;
     font-family: Vardana ;
     cursor: pointer;
     color: rgb(10, 50, 233);
@@ -145,7 +159,6 @@
 }
 
 .dropdown-contact{
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     margin-left: -150px;
     position: absolute;
     display: block;
@@ -158,14 +171,17 @@
     width: 100% ;
     height: auto;
 }
-.contact_box{
+.dropdown_contact_box{
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    margin: 0px 0px 0px 50px;
     height: 50px;
-    width: 200px;
-    color:rgb(16, 19, 212);
+    width: fit-content;
+    color:rgb(38, 38, 43);
     text-overflow: ellipsis;
+    padding:10px 10px;
     background-color: rgb(220, 228, 220);
 }
-.contact_box:hover{
+.dropdown_contact_box:hover{
     background-color: rgb(243, 247, 243);
 }
 
@@ -219,10 +235,11 @@
 
 .main{
     height: 100%;
+    width: 100%;
     color: rgb(163, 228, 206);
     background-image: url("../img/climpek.png");
     background-color: rgb(164, 202, 187);
-    min-width: 300px;
+    min-width: 240px;
 }
 
 .chat_header{
@@ -346,6 +363,18 @@
     text-decoration: none;
     color:rgb(16, 19, 212);
 }
+.contact_box{
+    background-color: rgb(195, 240, 240);
+    height: 50px;
+    text-decoration: none;
+    color:rgb(16, 19, 212);
+}
+.search_box{
+    background-color: rgb(165, 228, 191);
+    height: 50px;
+    text-decoration: none;
+    color:rgb(16, 19, 212);
+}
 .chat_box:hover{
     background-color:rgb(217, 235, 235);
 }
@@ -387,33 +416,50 @@
 }
 
 
-.box_top{
+.box_top_left{
+    padding-right: 0px;
     height: 25px;
     font-weight: bold;
     text-overflow: ellipsis ;
     text-align: left;
-    color:rgb(16, 19, 212);
+    color:rgb(65, 66, 165);
     text-decoration: none;
-    width: 100%;
     overflow-x: hidden;
     overflow-y: hidden;
     font-family: monospace;
     font-size: larger;
     float: left;
+    white-space: nowrap;
 }
-
-.box_bottom{
+.box_top_right{
+    padding-left: 0px;
+    padding-right: 3px;
     height: 25px;
+    font-weight: bold;
     text-overflow: ellipsis ;
     text-align: right;
-    float: right;
-    color:rgb(86, 89, 240);
+    color:rgb(8, 87, 116);
     text-decoration: none;
-    width: 100%;
     overflow-x: hidden;
     overflow-y: hidden;
-    font-size: x-small;
+    font-family: monospace;
+    font-size: small;
+    float: right;
+}
+
+.box_bottom_left{
+    height: 25px;
+    text-overflow: ellipsis ;
+    text-align: left;
+    float: left;
+    color:rgb(86, 89, 240);
+    text-decoration: none;
+    overflow:hidden;
+    font-size: small;
     font-family: Verdana;
+    display: inline-block;
+    width: 90%;
+    white-space: nowrap;
 }
 
 .search_class{
