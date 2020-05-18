@@ -77,6 +77,7 @@ class messages(models.Model):
     auther=models.ForeignKey(User, on_delete=models.CASCADE, related_name='msg')
     content=models.TextField(blank=True)
     file_msg=models.FileField(upload_to='Chat/files',blank=True)
+    file_type=models.TextField(blank=True)
     timestamp=models.DateTimeField(auto_now_add=True)
     room=models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='room_message')
 

@@ -177,7 +177,7 @@
                 </div>
                 <div v-if="pannel=='contact'">
                     <div v-if="!form">
-                        <button class='add_element btn btn-primary' v-show="!form" @click="form=true">Create Contact</button>
+                        <button class='add_element btn btn-primary' v-show="!form" @click="form=true; error_message=''">Create Contact</button>
                         <div v-for='contact in contactlist'>
                             <chatbox-component :on_chatroom='contact' :pannel='pannel'></chatbox-component>
                         </div>
@@ -192,6 +192,9 @@
                             <p><input class="form-control" type="text" v-model='new_contact.username'></p>
                             <button @click="createContact" class="btn btn-primary">Create</button>
                         </div>
+                        <div >
+                            <p> [{ error_message }]</p>
+                        </div>           
                     </div>
                 </div>
                 <div v-if="pannel=='search'">

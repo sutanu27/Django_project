@@ -186,7 +186,7 @@ def ContactsApi(request) :
             Contacts.objects.create(host=request.user, first_name=first_name, last_name=last_name, username=username)
             return JsonResponse({'message':'Contact has been Created'}, safe=False)
         else:
-            return JsonResponse({'message':'user doesnot extsts'}, safe=False, status=400)
+            return JsonResponse({'message': 'user with {} not exist'.format(username)}, status=404)
     else:
         pass
 

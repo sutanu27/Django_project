@@ -83,6 +83,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'file_name':data["file_name"],
                 'file_size':data["file_size"],
                 'upload_status':data["upload_status"],
+                'chatroom_id':chatroom_id,
                 'messege_id':msg_inst.id
             }
             # Send message to room group
@@ -99,11 +100,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             msg_inst=messages.objects.get(id=self.session['messege_id'])
             file_name=self.session['file_name']
+            chatroom_id=self.session['chatroom_id']
             content=ContentFile(file_content)
             msg_inst.file_msg.save(file_name,content,save=True)
             self.session={}
             return await self.channel_layer.group_send(
-                self.room_group_name,
+                'chat_%s' % chatroom_id,
                 {
                     'type': 'chat_message',
                     'message': self.josonify(msg_inst),

@@ -166,7 +166,7 @@ var app=new Vue({
         currentTab:'Home',
         pannel:'chat',
         contacts:[],
-        abc:[]
+        error_message:''
     },  
     methods: {
         displayProfile(room_id){
@@ -314,7 +314,8 @@ var app=new Vue({
                 app.renderContact();
                 app.form=false;
             }).catch(function(error){
-                console.log(error)
+                app.error_message=error.response.data.message;
+                console.log(error.response.data.message)
             })              
         }, 
         findRoomId(arg){
