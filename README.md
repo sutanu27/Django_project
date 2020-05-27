@@ -1,8 +1,8 @@
 # Django_project
 
 ## Environment set-up
-1. Install Python version 3.7.0 or more
-2. pip should be installed
-3. install virtual environment 
+* Install Python version 3.7.0 or more
+* pip should be installed
+* install virtual environment 
     pip install virtualenvwrapper-win
 
