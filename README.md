@@ -5,4 +5,7 @@
 * pip should be installed
 * install virtual environment 
     ```pip install virtualenvwrapper-win```
-
+* create an virtual environment
+    ```mkvirtualenv django_env```
+*   activate that environment
+    ```source django_test/bin/activate ```
