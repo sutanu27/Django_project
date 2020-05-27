@@ -1,6 +1,6 @@
 # Django_project
 
-## Environment set-up
+## Django Environment set-up
 * Install Python version 3.7.0 or more
 * pip should be installed
 * install virtual environment 
@@ -11,4 +11,5 @@
     ```source django_test/bin/activate ```
 * install Django 2.2 or more
     ```pip install django ```
-* 
+* install radis-server to work with django-channels
+```https://www.devglan.com/blog/install-redis-windows-and-mac```
