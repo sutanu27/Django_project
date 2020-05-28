@@ -11,5 +11,11 @@
     ```source django_test/bin/activate ```
 * install Django 2.2 or more
     ```pip install django ```
+    
+## Django channels Environment set-up
 * install radis-server to work with django-channels
-```https://www.devglan.com/blog/install-redis-windows-and-mac```
+```sudo apt-get install redis-server```
+* install django-channels
+```python -m pip install -U channels```
+
+## Installing Mongodb
